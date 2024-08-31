@@ -4,13 +4,15 @@ This Python-based YouTube downloader is a versatile tool designed to download vi
 
 ## Features
 
-- Download single YouTube videos
-- Download entire YouTube playlists
-- Download all videos from a YouTube channel
-- Select video quality (including best available)
+- Download single YouTube videos, playlists, and channel videos
+- Select video quality (including best available and VR/360 videos)
 - Interactive user interface using Jupyter widgets
 - Supports authentication using browser cookies
-- FFmpeg integration for highest quality downloads (when available)
+- Manage multiple YouTube logins
+- Automatic retry mechanism for failed downloads
+- Logging system for tracking operations and troubleshooting
+- Graceful shutdown and cleanup processes
+- FFmpeg integration for highest quality downloads and VR video processing
 
 ## Requirements
 
@@ -18,7 +20,9 @@ This Python-based YouTube downloader is a versatile tool designed to download vi
 - Jupyter Notebook
 - yt-dlp
 - ipywidgets
-- FFmpeg (optional, but recommended for best quality)
+- browser-cookie3
+- ffmpeg-python
+- FFmpeg (required for VR video processing and high-quality downloads)
 
 ## Setup
 
@@ -26,13 +30,13 @@ This Python-based YouTube downloader is a versatile tool designed to download vi
 
 2. Install the required Python packages:
    ```
-   pip install yt-dlp ipywidgets
+   pip install yt-dlp ipywidgets browser-cookie3 ffmpeg-python
    ```
 
-3. (Optional but recommended) Install FFmpeg:
+3. Install FFmpeg:
    - On macOS with Homebrew: `brew install ffmpeg`
-   - On Windows: Download from the official FFmpeg website
-   - On Linux: Use your distribution's package manager
+   - On Windows: Download from the official FFmpeg website and add to PATH
+   - On Linux: Use your distribution's package manager (e.g., `sudo apt-get install ffmpeg`)
 
 4. Copy the provided code into a Jupyter notebook.
 
@@ -42,35 +46,89 @@ This Python-based YouTube downloader is a versatile tool designed to download vi
 
 2. Execute the cell containing the function definitions.
 
-3. Run the `login_youtube()` function to authenticate (if needed):
+3. Run the `run_youtube_downloader()` function to start the interactive interface:
    ```python
-   login_youtube()
-   ```
-   This will prompt you to select your browser and fetch YouTube cookies.
-
-4. Use the `interactive_download()` function to start the downloader:
-   ```python
-   interactive_download()
+   run_youtube_downloader()
    ```
 
-5. In the interactive interface:
-   - Paste the YouTube URL (video, playlist, or channel) into the URL field.
-   - Optionally, specify the desired quality in the Quality field (e.g., '720p', '1080p', or 'best').
-   - Click the "Download" button to start the download process.
+4. The interface consists of four tabs:
+
+### Download Video Tab
+
+1. Paste the YouTube URL (video, playlist, or channel) into the URL field.
+2. Select the desired quality from the dropdown menu.
+3. Choose a login profile if needed (or use "No login").
+4. Click the "Download" button to start the download process.
+
+Example:
+```python
+# To download a video in 1080p quality
+url = "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
+quality = "1080p"
+login = "MyYouTubeAccount"  # or "No login" if not required
+```
+
+### Manage Logins Tab
+
+- View saved login profiles
+- Delete existing login profiles
+
+### Add Login Tab
+
+1. Select your browser from the dropdown menu.
+2. Enter a name for the login profile.
+3. Click "Get Cookies" to fetch and save the cookies for the selected browser.
+
+Example:
+```python
+# To add a new login profile
+browser = "chrome"
+login_name = "MyYouTubeAccount"
+```
+
+### Log Tab
+
+- View the log output for troubleshooting and tracking operations
+
+## Advanced Features
+
+### VR/360 Video Download
+
+The downloader can detect and process VR/360 videos. When a VR video is detected or forced:
+
+1. The video is downloaded in the best available quality.
+2. FFmpeg is used to convert the video to a spatial video format compatible with Quest 3 and iOS devices.
+3. The converted video is saved with `_spatial` appended to the filename.
+
+Example:
+```python
+# To force VR processing for a video
+url = "https://www.youtube.com/watch?v=VR_VIDEO_ID"
+quality = "vr"
+```
+
+### Automatic Retry
+
+The downloader will automatically retry failed downloads up to 3 times with increasing delays between attempts.
+
+### Graceful Shutdown
+
+The application implements a graceful shutdown process, ensuring that ongoing operations are properly closed and resources are released.
 
 ## Important Notes
 
 - Downloading content from YouTube may be against YouTube's Terms of Service. Use this tool responsibly and only for content you have permission to download.
 - Downloading entire channels or large playlists can take a significant amount of time and storage space. Ensure you have sufficient free disk space before starting large downloads.
 - The tool uses your browser's cookies for authentication. Make sure you're logged into YouTube in your chosen browser if you want to access content that requires authentication.
-- If FFmpeg is not installed, some high-quality formats may not be available for download.
+- VR video processing requires FFmpeg to be installed and properly configured.
 - This tool is for educational purposes only. The user is responsible for complying with all applicable laws and terms of service.
 
 ## Troubleshooting
 
-- If you encounter issues with video quality, ensure FFmpeg is installed and properly configured.
-- If downloads fail, check your internet connection and ensure you have the necessary permissions to access the content.
-- For channel downloads, if no videos are being saved, make sure you're using the latest version of the script that includes the two-step process for channel downloads.
+- If downloads fail, check the Log tab for detailed error messages.
+- Ensure you have the latest version of the script and all required libraries installed.
+- For issues with VR video processing, check that FFmpeg is properly installed and accessible from the command line.
+- If you encounter persistent issues with a specific video or channel, try using a different login profile or the "No login" option.
 
 ## Disclaimer
 
